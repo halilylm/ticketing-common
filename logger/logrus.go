@@ -37,7 +37,7 @@ func (l *logrusLogger) getLoggerLevel() logrus.Level {
 // InitLogger set ups the logging library
 func (l *logrusLogger) InitLogger(reqFields RequiredFields) {
 	logLevel := l.getLoggerLevel()
-	logger := &logrus.Logger{}
+	logger := logrus.StandardLogger()
 	logger.SetLevel(logLevel)
 	logger.SetFormatter(&logrus.JSONFormatter{})
 	for _, hook := range l.hooks {

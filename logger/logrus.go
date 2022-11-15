@@ -40,6 +40,7 @@ func (l *logrusLogger) InitLogger(reqFields RequiredFields) {
 	logger := logrus.StandardLogger()
 	logger.SetLevel(logLevel)
 	logger.SetFormatter(&logrus.JSONFormatter{})
+	logger.SetReportCaller(true)
 	for _, hook := range l.hooks {
 		logger.AddHook(hook)
 	}

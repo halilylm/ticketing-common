@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	// ErrMissingTopic is returned if given topic missing
-	ErrMissingTopic = errors.New("missing topic")
+	// ErrMissingTopic is returned if given Topic missing
+	ErrMissingTopic = errors.New("missing Topic")
 )
 
 // Publisher is an event publishing interface.

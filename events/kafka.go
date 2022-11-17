@@ -6,27 +6,27 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-type kafkaPublisher struct {
-	writer  *kafka.Writer
-	topic   string
-	brokers []string
+type KafkaPublisher struct {
+	Writer  *kafka.Writer
+	Topic   string
+	Brokers []string
 }
 
-func NewKafkaPublisher(topic string, brokers []string) *kafkaPublisher {
+func NewKafkaPublisher(topic string, brokers []string) *KafkaPublisher {
 	w := &kafka.Writer{
 		Addr:     kafka.TCP(brokers...),
 		Topic:    topic,
 		Balancer: &kafka.LeastBytes{},
 	}
-	return &kafkaPublisher{
-		writer:  w,
-		topic:   topic,
-		brokers: brokers,
+	return &KafkaPublisher{
+		Writer:  w,
+		Topic:   topic,
+		Brokers: brokers,
 	}
 }
 
-func (kp *kafkaPublisher) Publish(ctx context.Context, event Event) error {
-	return kp.writer.WriteMessages(ctx,
+func (kp *KafkaPublisher) Publish(ctx context.Context, event Event) error {
+	return kp.Writer.WriteMessages(ctx,
 		kafka.Message{
 			Key:   []byte(event.ID),
 			Value: event.Payload,
@@ -34,14 +34,14 @@ func (kp *kafkaPublisher) Publish(ctx context.Context, event Event) error {
 	)
 }
 
-type kafkaConsumer struct {
-	reader  *kafka.Reader
-	topic   string
-	groupID string
-	brokers []string
+type KafkaConsumer struct {
+	Reader  *kafka.Reader
+	Topic   string
+	GroupID string
+	Brokers []string
 }
 
-func NewKafkaConsumer(topic, groupID string, brokers []string) *kafkaConsumer {
+func NewKafkaConsumer(topic, groupID string, brokers []string) *KafkaConsumer {
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:  brokers,
 		GroupID:  groupID,
@@ -49,18 +49,18 @@ func NewKafkaConsumer(topic, groupID string, brokers []string) *kafkaConsumer {
 		MinBytes: 10e3, // 10KB
 		MaxBytes: 10e6, // 10MB
 	})
-	return &kafkaConsumer{
-		reader:  r,
-		topic:   topic,
-		brokers: brokers,
+	return &KafkaConsumer{
+		Reader:  r,
+		Topic:   topic,
+		Brokers: brokers,
 	}
 }
 
-func (kc *kafkaConsumer) Consume() <-chan Event {
+func (kc *KafkaConsumer) Consume() <-chan Event {
 	events := make(chan Event)
 	for {
 		var event Event
-		m, err := kc.reader.FetchMessage(context.Background())
+		m, err := kc.Reader.FetchMessage(context.Background())
 		if err != nil {
 			break
 		}

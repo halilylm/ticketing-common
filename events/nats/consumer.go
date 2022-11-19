@@ -1,7 +1,6 @@
 package nats
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -67,14 +66,9 @@ func (c *consumer) Consume() (<-chan *events.Event, error) {
 
 		// decode the message
 		evt := events.Event{
-			Topic: m.Subject,
+			Topic:   m.Subject,
+			Payload: m.Data,
 		}
-		if err := json.Unmarshal(m.Data, &evt.Payload); err != nil {
-			log.Errorf("error decoding message: %v", err)
-			// not acknowledging the message is the way to indicate an error occurred
-			return
-		}
-
 		if c.opts.ManualAckMode {
 			evt.AckFunc = func() error {
 				return m.Ack()

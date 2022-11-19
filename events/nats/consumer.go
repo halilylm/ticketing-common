@@ -73,9 +73,6 @@ func (c *consumer) Consume() (<-chan *events.Event, error) {
 			evt.AckFunc = func() error {
 				return m.Ack()
 			}
-			evt.NackFunc = func() error {
-				return nil
-			}
 		}
 
 		// push onto the channel and wait for the consumer to take the event off before we acknowledge it.

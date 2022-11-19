@@ -21,14 +21,12 @@ type Consumer interface {
 }
 
 type AckFunc func() error
-type NackFunc func() error
 
 // Event is the object send and
 // received by the broker
 type Event struct {
-	ID       string
-	Topic    string
-	Payload  []byte
-	AckFunc  AckFunc
-	NackFunc NackFunc
+	ID      string
+	Topic   string
+	Payload []byte
+	AckFunc AckFunc
 }

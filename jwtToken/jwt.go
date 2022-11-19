@@ -18,27 +18,15 @@ type AuthClaim struct {
 	jwt.RegisteredClaims
 }
 
-type JWTToken struct {
-	ExpiresIn time.Duration
-	Secret    string
-}
-
-func NewJWTToken(expires time.Duration, secret string) *JWTToken {
-	return &JWTToken{
-		ExpiresIn: expires,
-		Secret:    secret,
-	}
-}
-
-func (j *JWTToken) GenerateToken(userClaim UserClaim) (string, error) {
+func GenerateToken(userClaim UserClaim, secret string, expiresIN time.Duration) (string, error) {
 	claim := jwt.NewWithClaims(jwt.SigningMethodHS256, AuthClaim{
 		UserClaim: userClaim,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.ExpiresIn)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expiresIN)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	})
-	token, err := claim.SignedString([]byte("super_secret"))
+	token, err := claim.SignedString([]byte(secret))
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -47,9 +35,9 @@ func (j *JWTToken) GenerateToken(userClaim UserClaim) (string, error) {
 	return token, nil
 }
 
-func (j *JWTToken) ParseToken(tokenString string) (*UserClaim, error) {
+func ParseToken(tokenString string, secret string) (*UserClaim, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &AuthClaim{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(j.Secret), nil
+		return []byte(secret), nil
 	})
 	if err != nil {
 		return nil, err

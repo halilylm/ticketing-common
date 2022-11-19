@@ -2,14 +2,15 @@ package jwtToken
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt/v4"
 	"log"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type UserClaim struct {
-	Email    string `json:"email"`
-	UserID   string `json:"user_id"`
+	Email  string `json:"email"`
+	UserID string `json:"user_id"`
 }
 
 type AuthClaim struct {

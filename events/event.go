@@ -12,18 +12,23 @@ var (
 
 // Publisher is an event publishing interface.
 type Publisher interface {
-	Publish(event Event) error
+	PublishMessage(event *Event) error
 }
 
 // Consumer is an event consuming interface.
 type Consumer interface {
-	Consume() <-chan Event
+	Consume() (<-chan *Event, error)
 }
+
+type AckFunc func() error
+type NackFunc func() error
 
 // Event is the object send and
 // received by the broker
 type Event struct {
-	ID      string
-	Topic   string
-	Payload []byte
+	ID       string
+	Topic    string
+	Payload  []byte
+	AckFunc  AckFunc
+	NackFunc NackFunc
 }

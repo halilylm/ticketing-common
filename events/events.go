@@ -50,3 +50,23 @@ func NewOrderCancelledEvent(event OrderCancelledEvent) (*Event, error) {
 		Payload: body,
 	}, nil
 }
+
+type TicketCreateEvent struct {
+	ID          int
+	Title       string
+	Description string
+	Price       int
+	UserID      string
+}
+
+func NewTicketCreateEvent(event TicketCreateEvent) (*Event, error) {
+	body, err := json.Marshal(event)
+	if err != nil {
+		return nil, err
+	}
+	return &Event{
+		ID:      uuid.NewString(),
+		Topic:   topics.TicketCreated,
+		Payload: body,
+	}, nil
+}

@@ -27,26 +27,26 @@ type OrderCancelledEvent struct {
 	}
 }
 
-func NewOrderCreatedEvent(event OrderCreateEvent) *Event {
+func NewOrderCreatedEvent(event OrderCreateEvent) (*Event, error) {
 	body, err := json.Marshal(event)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	return &Event{
 		ID:      uuid.NewString(),
 		Topic:   topics.OrderCreated,
 		Payload: body,
-	}
+	}, nil
 }
 
-func NewOrderCancelledEvent(event OrderCancelledEvent) *Event {
+func NewOrderCancelledEvent(event OrderCancelledEvent) (*Event, error) {
 	body, err := json.Marshal(event)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	return &Event{
 		ID:      uuid.NewString(),
 		Topic:   topics.OrderCancelled,
 		Payload: body,
-	}
+	}, nil
 }

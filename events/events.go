@@ -52,11 +52,11 @@ func NewOrderCancelledEvent(event OrderCancelledEvent) (*Event, error) {
 }
 
 type TicketCreateEvent struct {
-	ID          int
-	Title       string
-	Description string
-	Price       int
-	UserID      string
+	ID          int    `validate:"required,number"`
+	Title       string `validate:"required"`
+	Description string `validate:"required"`
+	Price       int    `validate:"required,number"`
+	UserID      string `validate:"required"`
 }
 
 func NewTicketCreateEvent(event TicketCreateEvent) (*Event, error) {

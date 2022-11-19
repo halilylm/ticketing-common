@@ -70,3 +70,23 @@ func NewTicketCreateEvent(event TicketCreateEvent) (*Event, error) {
 		Payload: body,
 	}, nil
 }
+
+type TicketUpdatedEvent struct {
+	ID          int    `validate:"required,number"`
+	Title       string `validate:"required"`
+	Description string `validate:"required"`
+	Price       int    `validate:"required,number"`
+	UserID      string `validate:"required"`
+}
+
+func NewTicketUpdatedEvent(event TicketUpdatedEvent) (*Event, error) {
+	body, err := json.Marshal(event)
+	if err != nil {
+		return nil, err
+	}
+	return &Event{
+		ID:      uuid.NewString(),
+		Topic:   topics.TicketUpdated,
+		Payload: body,
+	}, nil
+}

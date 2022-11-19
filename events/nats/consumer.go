@@ -66,8 +66,10 @@ func (c *consumer) Consume() (<-chan *events.Event, error) {
 		}
 
 		// decode the message
-		var evt events.Event
-		if err := json.Unmarshal(m.Data, &evt); err != nil {
+		evt := events.Event{
+			Topic: m.Subject,
+		}
+		if err := json.Unmarshal(m.Data, &evt.Payload); err != nil {
 			log.Errorf("error decoding message: %v", err)
 			// not acknowledging the message is the way to indicate an error occurred
 			return

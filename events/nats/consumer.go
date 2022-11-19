@@ -3,6 +3,8 @@ package nats
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/halilylm/ticketing-common/events"
 	"github.com/halilylm/ticketing-common/logger"
 	"github.com/nats-io/stan.go"
@@ -10,19 +12,27 @@ import (
 
 // ConsumerOptions contains all the options which can be provided when reading events from a store.
 type ConsumerOptions struct {
-	// Limit the number of results to return
-	Limit uint
-	// Offset the results by this number, useful for paginated queries
-	Offset uint
 	// Topic name of the topic to consume
 	Topic string
 	// Logger is the logger for consumer
 	Logging logger.Logger
 	// GroupID name of the group
 	Group string
-	// AutoAckMode
-	AutoAckMode bool
-	RetryLimit  int
+	// RetryLimit number of retries
+	RetryLimit int
+	// ManulAckMode if true disables auto ack mode
+	// message will be relidevered if message is not
+	// manually acknowledged
+	// if proccess is successful, acknowlege the message
+	// if proccess is unsucessful, nacknowledge the message
+	// so it will be proccessed again
+	ManualAckMode bool
+	// AckWait waits until specific time duration
+	// for message to be acknolowed if not acknowledged
+	// process it again
+	AckWait time.Duration
+	// DeliverAllAvailable messages from the channel
+	DeliverAllAvailable bool
 }
 
 type consumer struct {
@@ -63,7 +73,7 @@ func (c *consumer) Consume() (<-chan *events.Event, error) {
 			return
 		}
 
-		if !c.opts.AutoAckMode {
+		if c.opts.ManualAckMode {
 			evt.AckFunc = func() error {
 				return m.Ack()
 			}
@@ -75,7 +85,7 @@ func (c *consumer) Consume() (<-chan *events.Event, error) {
 		// push onto the channel and wait for the consumer to take the event off before we acknowledge it.
 		consumedEvents <- &evt
 
-		if !c.opts.AutoAckMode {
+		if c.opts.ManualAckMode {
 			return
 		}
 		if err := m.Ack(); err != nil {
@@ -87,6 +97,12 @@ func (c *consumer) Consume() (<-chan *events.Event, error) {
 	consumerOpts := []stan.SubscriptionOption{
 		stan.DurableName(c.opts.Topic),
 		stan.SetManualAckMode(),
+	}
+	if c.opts.AckWait > 0 {
+		consumerOpts = append(consumerOpts, stan.AckWait(c.opts.AckWait))
+	}
+	if c.opts.DeliverAllAvailable {
+		consumerOpts = append(consumerOpts, stan.DeliverAllAvailable())
 	}
 
 	// connect the subscriber

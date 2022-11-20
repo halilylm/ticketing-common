@@ -14,6 +14,7 @@ type OrderCreateEvent struct {
 	Status    types.OrderStatus
 	UserID    string
 	ExpiresAt *time.Time
+	Version   int `validate:"required"`
 	Ticket    struct {
 		ID    int
 		Price int
@@ -57,6 +58,7 @@ type TicketCreateEvent struct {
 	Description string `validate:"required"`
 	Price       int    `validate:"required,number"`
 	UserID      string `validate:"required"`
+	Version     int    `validate:"required"`
 }
 
 func NewTicketCreateEvent(event TicketCreateEvent) (*Event, error) {
@@ -77,6 +79,7 @@ type TicketUpdatedEvent struct {
 	Description string `validate:"required"`
 	Price       int    `validate:"required,number"`
 	UserID      string `validate:"required"`
+	Version     int    `validate:"required"`
 }
 
 func NewTicketUpdatedEvent(event TicketUpdatedEvent) (*Event, error) {

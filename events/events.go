@@ -14,7 +14,7 @@ type OrderCreateEvent struct {
 	Status    types.OrderStatus
 	UserID    string
 	ExpiresAt *time.Time
-	Version   int `validate:"required"`
+	Version   int
 	Ticket    struct {
 		ID    int
 		Price int

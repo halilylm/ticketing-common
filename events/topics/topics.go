@@ -5,4 +5,5 @@ const (
 	OrderCancelled = "order-cancelled"
 	TicketCreated  = "ticket-created"
 	TicketUpdated  = "ticket-updated"
+	OrderExpired   = "order-expired"
 )

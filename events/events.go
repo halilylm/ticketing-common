@@ -93,3 +93,19 @@ func NewTicketUpdatedEvent(event TicketUpdatedEvent) (*Event, error) {
 		Payload: body,
 	}, nil
 }
+
+type OrderExpiredEvent struct {
+	OrderID int
+}
+
+func NewOrderExpiredEvent(event OrderExpiredEvent) (*Event, error) {
+	body, err := json.Marshal(event)
+	if err != nil {
+		return nil, err
+	}
+	return &Event{
+		ID:      uuid.NewString(),
+		Topic:   topics.OrderExpired,
+		Payload: body,
+	}, nil
+}

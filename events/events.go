@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/halilylm/ticketing-common/events/topics"
 	"github.com/halilylm/ticketing-common/events/types"
 )
 
@@ -22,34 +21,11 @@ type OrderCreateEvent struct {
 }
 
 type OrderCancelledEvent struct {
-	ID     int
-	Ticket struct {
+	ID      int
+	Version int
+	Ticket  struct {
 		ID int
 	}
-}
-
-func NewOrderCreatedEvent(event OrderCreateEvent) (*Event, error) {
-	body, err := json.Marshal(event)
-	if err != nil {
-		return nil, err
-	}
-	return &Event{
-		ID:      uuid.NewString(),
-		Topic:   topics.OrderCreated,
-		Payload: body,
-	}, nil
-}
-
-func NewOrderCancelledEvent(event OrderCancelledEvent) (*Event, error) {
-	body, err := json.Marshal(event)
-	if err != nil {
-		return nil, err
-	}
-	return &Event{
-		ID:      uuid.NewString(),
-		Topic:   topics.OrderCancelled,
-		Payload: body,
-	}, nil
 }
 
 type TicketCreateEvent struct {
@@ -61,18 +37,6 @@ type TicketCreateEvent struct {
 	Version     int    `validate:"required"`
 }
 
-func NewTicketCreateEvent(event TicketCreateEvent) (*Event, error) {
-	body, err := json.Marshal(event)
-	if err != nil {
-		return nil, err
-	}
-	return &Event{
-		ID:      uuid.NewString(),
-		Topic:   topics.TicketCreated,
-		Payload: body,
-	}, nil
-}
-
 type TicketUpdatedEvent struct {
 	ID          int    `validate:"required,number"`
 	Title       string `validate:"required"`
@@ -82,30 +46,24 @@ type TicketUpdatedEvent struct {
 	Version     int    `validate:"required"`
 }
 
-func NewTicketUpdatedEvent(event TicketUpdatedEvent) (*Event, error) {
-	body, err := json.Marshal(event)
-	if err != nil {
-		return nil, err
-	}
-	return &Event{
-		ID:      uuid.NewString(),
-		Topic:   topics.TicketUpdated,
-		Payload: body,
-	}, nil
-}
-
 type OrderExpiredEvent struct {
 	OrderID int
 }
 
-func NewOrderExpiredEvent(event OrderExpiredEvent) (*Event, error) {
+type PaymentCreatedEvent struct {
+	ID       int    `json:"id"`
+	OrderID  int    `json:"order_id"`
+	StripeID string `json:"stripe_id"`
+}
+
+func NewEvent(event any, topic string) (*Event, error) {
 	body, err := json.Marshal(event)
 	if err != nil {
 		return nil, err
 	}
 	return &Event{
 		ID:      uuid.NewString(),
-		Topic:   topics.OrderExpired,
+		Topic:   topic,
 		Payload: body,
 	}, nil
 }

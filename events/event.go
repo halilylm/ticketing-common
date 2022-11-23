@@ -2,12 +2,15 @@
 package events
 
 import (
+	"encoding/json"
 	"errors"
 )
 
 var (
 	// ErrMissingTopic is returned if given Topic missing
 	ErrMissingTopic = errors.New("missing Topic")
+	// ErrEncodingMessage is returned if there was an error encoding the message option.
+	ErrEncodingMessage = errors.New("Error encoding message")
 )
 
 // Publisher is an event publishing interface.
@@ -29,4 +32,9 @@ type Event struct {
 	Topic   string
 	Payload []byte
 	AckFunc AckFunc
+}
+
+// Unmarshal the event into an object.
+func (e *Event) Unmarshal(v any) error {
+	return json.Unmarshal(e.Payload, v)
 }
